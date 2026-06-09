@@ -4,7 +4,7 @@ namespace MachineACafé.Test.Utilities;
 
 internal class SoftwareMachineBuilder
 {
-    private IBrewer _brewer = null;
+    private IBrewer _brewer = new BrewerStub();
     private IChangeMachine _changeMachine = new ChangeMachineStub();
 
     public SoftwareMachine Build()

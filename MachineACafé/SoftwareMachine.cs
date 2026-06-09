@@ -8,11 +8,17 @@ public class SoftwareMachine
     {
         changeMachine.FlushStoredMoney();
         changeMachine.CollectStoredMoney();
+
+        try
+        {
+            brewer.MakeACoffee();
+        }
+        catch
+        {
+        }
     }
 
     public void Insérer(ushort montantEnCentimes)
     {
     }
-
-    public ushort NombreCafésServis => 1;
 }
