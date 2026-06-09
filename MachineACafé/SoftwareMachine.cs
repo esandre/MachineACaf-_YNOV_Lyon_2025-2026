@@ -11,11 +11,12 @@ public class SoftwareMachine
     {
         _brewer = brewer;
         _changeMachine = changeMachine;
+        _changeMachine.RegisterMoneyInsertedCallback(coin => Insérer(new Coin((ushort) coin)));
     }
 
-    public void Insérer(ushort montantEnCentimes)
+    private void Insérer(Coin somme)
     {
-        if (montantEnCentimes < 40)
+        if (somme.ValueInCents < 40)
         {
             _changeMachine.FlushStoredMoney();
             return;

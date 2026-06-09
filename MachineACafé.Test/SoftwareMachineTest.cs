@@ -1,8 +1,9 @@
-﻿using MachineACafé.Test.Utilities;
+﻿using Hardware;
+using MachineACafé.Test.Utilities;
 
 namespace MachineACafé.Test;
 
-//TODO : Typage pour éviter des tests. Mocks automatisés.
+//TODO : Mocks automatisés.
 
 public class SoftwareMachineTest
 {
@@ -26,101 +27,74 @@ public class SoftwareMachineTest
     [Fact]
     public void CasNominal()
     {
-        const ushort prixDuCafé = 40;
-
         // ETANT DONNE une machine à café
-        var changeMachine = new ChangeMachineSpy();
+        var changeMachine = new ChangeMachineFake();
+        var changeMachineSpy = new ChangeMachineSpy(changeMachine);
+
         var brewer = new BrewerSpy(new BrewerStub());
-        var machine = new SoftwareMachineBuilder()
-            .AyantUneChangeMachine(changeMachine)
+        _ = new SoftwareMachineBuilder()
+            .AyantUneChangeMachine(changeMachineSpy)
             .AyantUnBrewer(brewer)
             .Build();
 
-        // QUAND on insère 40cts
-        machine.Insérer(prixDuCafé);
+        // QUAND on insère une somme supérieure ou égale au prix d'un café
+        changeMachine.SimulerInsertionPièce(CoinCode.FiftyCents);
 
         // ALORS MakeACoffee est appelé une fois sur le hardware
         Assert.Equal(1, brewer.MakeACoffeeInvocations);
 
         // ET CollectStoredMoney est appelé une fois sur le hardware
-        Assert.Equal(1, changeMachine.CollectStoredMoneyInvocations);
+        Assert.Equal(1, changeMachineSpy.CollectStoredMoneyInvocations);
 
         // ET FlushStoredMoney n'est pas appelé
-        Assert.Equal(0, changeMachine.FlushStoredMoneyInvocations);
+        Assert.Equal(0, changeMachineSpy.FlushStoredMoneyInvocations);
     }
 
     [Fact]
     public void CasBrewerDéfaillant()
     {
-        const ushort prixDuCafé = 40;
-
         // ETANT DONNE une machine à café ayant un brewer défaillant
-        var changeMachine = new ChangeMachineSpy();
+        var changeMachine = new ChangeMachineFake();
+        var changeMachineSpy = new ChangeMachineSpy(changeMachine);
 
-        var machine = new SoftwareMachineBuilder()
+        _ = new SoftwareMachineBuilder()
             .AyantUnBrewer(new BrewerDummy())
-            .AyantUneChangeMachine(changeMachine)
+            .AyantUneChangeMachine(changeMachineSpy)
             .Build();
 
-        // QUAND on insère 40cts
-        machine.Insérer(prixDuCafé);
+        // QUAND on insère une somme supérieure ou égale au prix d'un café
+        changeMachine.SimulerInsertionPièce(CoinCode.FiftyCents);
 
         // ALORS FlushStoredMoney est appelé une fois
-        Assert.Equal(1, changeMachine.FlushStoredMoneyInvocations);
+        Assert.Equal(1, changeMachineSpy.FlushStoredMoneyInvocations);
 
         // ET CollectStoredMoney n'est pas appelé
-        Assert.Equal(0, changeMachine.CollectStoredMoneyInvocations);
+        Assert.Equal(0, changeMachineSpy.CollectStoredMoneyInvocations);
     }
 
     [Fact]
     public void PasAssezArgent()
     {
-        const ushort prixDuCafé = 40;
-
         // ETANT DONNE une machine à café
-        var changeMachine = new ChangeMachineSpy();
+        var changeMachine = new ChangeMachineFake();
+        var changeMachineSpy = new ChangeMachineSpy(changeMachine);
+
         var brewer = new BrewerSpy();
-        var machine = new SoftwareMachineBuilder()
-            .AyantUneChangeMachine(changeMachine)
+        _ = new SoftwareMachineBuilder()
+            .AyantUneChangeMachine(changeMachineSpy)
             .AyantUnBrewer(brewer)
             .Build();
 
         // QUAND on insère moins que le prix d'un café
-        machine.Insérer(prixDuCafé - 1);
+        changeMachine.SimulerInsertionPièce(CoinCode.TwentyCents);
 
         // ALORS MakeACoffee n'est pas appelé
         Assert.Equal(0, brewer.MakeACoffeeInvocations);
 
         // ET CollectStoredMoney n'est pas appelé
-        Assert.Equal(0, changeMachine.CollectStoredMoneyInvocations);
+        Assert.Equal(0, changeMachineSpy.CollectStoredMoneyInvocations);
 
         // ET FlushStoredMoney est appelé une fois
-        Assert.Equal(1, changeMachine.FlushStoredMoneyInvocations);
-    }
-
-    [Fact]
-    public void TropArgent()
-    {
-        const ushort prixDuCafé = 40;
-
-        // ETANT DONNE une machine à café
-        var changeMachine = new ChangeMachineSpy();
-        var brewer = new BrewerSpy();
-        var machine = new SoftwareMachineBuilder()
-            .AyantUneChangeMachine(changeMachine)
-            .AyantUnBrewer(brewer)
-            .Build();
-
-        // QUAND on insère plus que le prix d'un café
-        machine.Insérer(prixDuCafé + 1);
-
-        // ALORS MakeACoffee est appelé une fois
-        Assert.Equal(1, brewer.MakeACoffeeInvocations);
-
-        // ET CollectStoredMoney est appelé une fois
-        Assert.Equal(1, changeMachine.CollectStoredMoneyInvocations);
-
-        // ET FlushStoredMoney n'est pas appelé
-        Assert.Equal(0, changeMachine.FlushStoredMoneyInvocations);
+        Assert.Equal(1, changeMachineSpy.FlushStoredMoneyInvocations);
     }
 }
