@@ -1,7 +1,13 @@
-﻿namespace MachineACafé;
+﻿using Hardware;
+
+namespace MachineACafé;
 
 public class SoftwareMachine
 {
+    public SoftwareMachine(IBrewer brewer)
+    {
+    }
+
     public void Insérer(ushort montantEnCentimes)
     {
         MontantEncaisséEnCentimes += montantEnCentimes;
