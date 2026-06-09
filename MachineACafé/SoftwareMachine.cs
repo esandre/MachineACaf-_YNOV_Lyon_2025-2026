@@ -2,10 +2,10 @@
 
 public class SoftwareMachine
 {
-    public void InsérerCentimes(ushort montant)
+    public void Insérer(ushort montantEnCentimes)
     {
     }
 
-    public ushort NombreCafésServis { get; } = 1;
-    public ushort MontantEncaisséEnCentimes { get; } = 40;
+    public ushort NombreCafésServis => 1;
+    public ushort MontantEncaisséEnCentimes => 40;
 }

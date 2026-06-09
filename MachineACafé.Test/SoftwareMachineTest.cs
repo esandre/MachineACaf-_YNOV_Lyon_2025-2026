@@ -5,16 +5,18 @@ public class SoftwareMachineTest
     [Fact]
     public void CasNominal()
     {
+        const ushort prixDuCafé = 40;
+
         // ETANT DONNE une machine à café
         var machine = new SoftwareMachine();
 
         // QUAND on insère 40cts
-        machine.InsérerCentimes(40);
+        machine.Insérer(prixDuCafé);
 
         // ALORS un café coule
         Assert.Equal(1, machine.NombreCafésServis);
 
         // ET l'argent est encaissé
-        Assert.Equal(40, machine.MontantEncaisséEnCentimes);
+        Assert.Equal(prixDuCafé, machine.MontantEncaisséEnCentimes);
     }
 }
