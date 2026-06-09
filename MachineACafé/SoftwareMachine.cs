@@ -4,21 +4,26 @@ namespace MachineACafé;
 
 public class SoftwareMachine
 {
+    private readonly IBrewer _brewer;
+    private readonly IChangeMachine _changeMachine;
+
     public SoftwareMachine(IBrewer brewer, IChangeMachine changeMachine)
     {
-        changeMachine.FlushStoredMoney();
-        changeMachine.CollectStoredMoney();
-
-        try
-        {
-            brewer.MakeACoffee();
-        }
-        catch
-        {
-        }
+        _brewer = brewer;
+        _changeMachine = changeMachine;
     }
 
     public void Insérer(ushort montantEnCentimes)
     {
+        _changeMachine.FlushStoredMoney();
+        _changeMachine.CollectStoredMoney();
+
+        try
+        {
+            _brewer.MakeACoffee();
+        }
+        catch
+        {
+        }
     }
 }

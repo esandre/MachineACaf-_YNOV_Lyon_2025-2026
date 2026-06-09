@@ -7,6 +7,7 @@ internal class BrewerSpy : IBrewer
     private readonly IBrewer _behavior;
 
     public ushort MakeACoffeeInvocations { get; private set; }
+    public bool Untouched => MakeACoffeeInvocations == 0;
 
     public BrewerSpy(IBrewer behavior)
     {

@@ -5,6 +5,23 @@ namespace MachineACafé.Test;
 public class SoftwareMachineTest
 {
     [Fact]
+    public void AucuneAction()
+    {
+        // ETANT DONNE une machine à café
+        var changeMachine = new ChangeMachineSpy(new ChangeMachineStub());
+        var brewer = new BrewerSpy(new BrewerStub());
+
+        _ = new SoftwareMachineBuilder()
+            .AyantUneChangeMachine(changeMachine)
+            .AyantUnBrewer(brewer)
+            .Build();
+
+        // ALORS aucune invocation du Brewer ou de la ChangeMachine n'est effectuée
+        Assert.True(changeMachine.Untouched);
+        Assert.True(brewer.Untouched);
+    }
+
+    [Fact]
     public void CasNominal()
     {
         const ushort prixDuCafé = 40;
