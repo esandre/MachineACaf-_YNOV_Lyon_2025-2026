@@ -42,6 +42,9 @@ public class SoftwareMachineTest
 
         // ET CollectStoredMoney est appelé une fois sur le hardware
         Assert.Equal(1, changeMachine.CollectStoredMoneyInvocations);
+
+        // ET FlushStoredMoney n'est pas appelé
+        Assert.Equal(0, changeMachine.FlushStoredMoneyInvocations);
     }
 
     [Fact]
@@ -60,8 +63,11 @@ public class SoftwareMachineTest
         // QUAND on insère 40cts
         machine.Insérer(prixDuCafé);
 
-        // ALORS FlushStoredMoney est appelé une fois sur le hardware
+        // ALORS FlushStoredMoney est appelé une fois
         Assert.Equal(1, changeMachine.FlushStoredMoneyInvocations);
+
+        // ET CollectStoredMoney n'est pas appelé
+        Assert.Equal(0, changeMachine.CollectStoredMoneyInvocations);
     }
 
     [Fact]
@@ -80,10 +86,13 @@ public class SoftwareMachineTest
         // QUAND on insère plus que le prix d'un café
         machine.Insérer(prixDuCafé + 1);
 
-        // ALORS MakeACoffee est appelé une fois sur le hardware
+        // ALORS MakeACoffee est appelé une fois
         Assert.Equal(1, brewer.MakeACoffeeInvocations);
 
-        // ET CollectStoredMoney est appelé une fois sur le hardware
+        // ET CollectStoredMoney est appelé une fois
         Assert.Equal(1, changeMachine.CollectStoredMoneyInvocations);
+
+        // ET FlushStoredMoney n'est pas appelé
+        Assert.Equal(0, changeMachine.FlushStoredMoneyInvocations);
     }
 }

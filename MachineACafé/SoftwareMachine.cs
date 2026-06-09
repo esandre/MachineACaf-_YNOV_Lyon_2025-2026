@@ -15,15 +15,17 @@ public class SoftwareMachine
 
     public void Insérer(ushort montantEnCentimes)
     {
-        _changeMachine.FlushStoredMoney();
-        _changeMachine.CollectStoredMoney();
-
-        try
+        if (montantEnCentimes >= 40)
         {
-            _brewer.MakeACoffee();
-        }
-        catch
-        {
+            try
+            {
+                _brewer.MakeACoffee();
+                _changeMachine.CollectStoredMoney();
+            }
+            catch
+            {
+                _changeMachine.FlushStoredMoney();
+            }
         }
     }
 }
