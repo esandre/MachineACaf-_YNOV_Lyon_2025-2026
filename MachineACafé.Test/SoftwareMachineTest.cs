@@ -6,7 +6,7 @@ public class SoftwareMachineTest
     public void CasNominal()
     {
         // ETANT DONNE une machine à café
-        var machine = new SofwareMachine();
+        var machine = new SoftwareMachine();
 
         // QUAND on insère 40cts
         machine.InsérerCentimes(40);
