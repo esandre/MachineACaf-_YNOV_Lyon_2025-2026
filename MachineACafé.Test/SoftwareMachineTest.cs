@@ -71,6 +71,32 @@ public class SoftwareMachineTest
     }
 
     [Fact]
+    public void PasAssezArgent()
+    {
+        const ushort prixDuCafé = 40;
+
+        // ETANT DONNE une machine à café
+        var changeMachine = new ChangeMachineSpy(new ChangeMachineStub());
+        var brewer = new BrewerSpy(new BrewerStub());
+        var machine = new SoftwareMachineBuilder()
+            .AyantUneChangeMachine(changeMachine)
+            .AyantUnBrewer(brewer)
+            .Build();
+
+        // QUAND on insère moins que le prix d'un café
+        machine.Insérer(prixDuCafé - 1);
+
+        // ALORS MakeACoffee n'est pas appelé
+        Assert.Equal(0, brewer.MakeACoffeeInvocations);
+
+        // ET CollectStoredMoney n'est pas appelé
+        Assert.Equal(0, changeMachine.CollectStoredMoneyInvocations);
+
+        // ET FlushStoredMoney est appelé une fois
+        Assert.Equal(1, changeMachine.FlushStoredMoneyInvocations);
+    }
+
+    [Fact]
     public void TropArgent()
     {
         const ushort prixDuCafé = 40;
