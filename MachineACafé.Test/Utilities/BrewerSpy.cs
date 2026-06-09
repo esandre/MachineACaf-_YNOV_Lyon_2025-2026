@@ -9,6 +9,8 @@ internal class BrewerSpy : IBrewer
     public ushort MakeACoffeeInvocations { get; private set; }
     public bool Untouched => MakeACoffeeInvocations == 0;
 
+    public BrewerSpy(): this(new BrewerStub()) {}
+
     public BrewerSpy(IBrewer behavior)
     {
         _behavior = behavior;

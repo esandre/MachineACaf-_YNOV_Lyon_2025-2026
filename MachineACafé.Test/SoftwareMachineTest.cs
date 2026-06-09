@@ -2,14 +2,16 @@
 
 namespace MachineACafé.Test;
 
+//TODO : Typage pour éviter des tests. Mocks automatisés.
+
 public class SoftwareMachineTest
 {
     [Fact]
     public void AucuneAction()
     {
         // ETANT DONNE une machine à café
-        var changeMachine = new ChangeMachineSpy(new ChangeMachineStub());
-        var brewer = new BrewerSpy(new BrewerStub());
+        var changeMachine = new ChangeMachineSpy();
+        var brewer = new BrewerSpy();
 
         _ = new SoftwareMachineBuilder()
             .AyantUneChangeMachine(changeMachine)
@@ -27,7 +29,7 @@ public class SoftwareMachineTest
         const ushort prixDuCafé = 40;
 
         // ETANT DONNE une machine à café
-        var changeMachine = new ChangeMachineSpy(new ChangeMachineStub());
+        var changeMachine = new ChangeMachineSpy();
         var brewer = new BrewerSpy(new BrewerStub());
         var machine = new SoftwareMachineBuilder()
             .AyantUneChangeMachine(changeMachine)
@@ -53,7 +55,7 @@ public class SoftwareMachineTest
         const ushort prixDuCafé = 40;
 
         // ETANT DONNE une machine à café ayant un brewer défaillant
-        var changeMachine = new ChangeMachineSpy(new ChangeMachineStub());
+        var changeMachine = new ChangeMachineSpy();
 
         var machine = new SoftwareMachineBuilder()
             .AyantUnBrewer(new BrewerDummy())
@@ -76,8 +78,8 @@ public class SoftwareMachineTest
         const ushort prixDuCafé = 40;
 
         // ETANT DONNE une machine à café
-        var changeMachine = new ChangeMachineSpy(new ChangeMachineStub());
-        var brewer = new BrewerSpy(new BrewerStub());
+        var changeMachine = new ChangeMachineSpy();
+        var brewer = new BrewerSpy();
         var machine = new SoftwareMachineBuilder()
             .AyantUneChangeMachine(changeMachine)
             .AyantUnBrewer(brewer)
@@ -102,8 +104,8 @@ public class SoftwareMachineTest
         const ushort prixDuCafé = 40;
 
         // ETANT DONNE une machine à café
-        var changeMachine = new ChangeMachineSpy(new ChangeMachineStub());
-        var brewer = new BrewerSpy(new BrewerStub());
+        var changeMachine = new ChangeMachineSpy();
+        var brewer = new BrewerSpy();
         var machine = new SoftwareMachineBuilder()
             .AyantUneChangeMachine(changeMachine)
             .AyantUnBrewer(brewer)
