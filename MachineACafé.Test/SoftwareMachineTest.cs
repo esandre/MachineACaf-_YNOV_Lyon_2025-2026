@@ -1,4 +1,5 @@
-﻿using MachineACafé.Test.Utilities;
+﻿using Hardware;
+using MachineACafé.Test.Utilities;
 
 namespace MachineACafé.Test;
 
@@ -10,7 +11,8 @@ public class SoftwareMachineTest
         const ushort prixDuCafé = 40;
 
         // ETANT DONNE une machine à café
-        var machine = new SoftwareMachineBuilder().Build();
+        var changeMachine = new ChangeMachineSpy(new ChangeMachineStub());
+        var machine = new SoftwareMachineBuilder().AyantUneChangeMachine(changeMachine).Build();
 
         // QUAND on insère 40cts
         machine.Insérer(prixDuCafé);
@@ -19,7 +21,7 @@ public class SoftwareMachineTest
         Assert.Equal(1, machine.NombreCafésServis);
 
         // ET CollectStoredMoney est appelé une fois sur le hardware
-        Assert.Equal(prixDuCafé, machine.MontantEncaisséEnCentimes);
+        Assert.Equal(1, changeMachine.CollectStoredMoneyInvocations);
     }
 
     [Fact]
@@ -28,15 +30,18 @@ public class SoftwareMachineTest
         const ushort prixDuCafé = 40;
 
         // ETANT DONNE une machine à café ayant un brewer défaillant
+        var changeMachine = new ChangeMachineSpy(new ChangeMachineStub());
+
         var machine = new SoftwareMachineBuilder()
-            .AyantUnBrewerDéfaillant()
+            .AyantUnBrewer(new BrewerDummy())
+            .AyantUneChangeMachine(changeMachine)
             .Build();
 
         // QUAND on insère 40cts
         machine.Insérer(prixDuCafé);
 
         // ALORS FlushStoredMoney est appelé une fois sur le hardware
-        Assert.Equal(prixDuCafé, machine.MontantEncaisséEnCentimes);
+        Assert.Equal(1, changeMachine.FlushStoredMoneyInvocations);
     }
 
     [Fact]
@@ -45,7 +50,8 @@ public class SoftwareMachineTest
         const ushort prixDuCafé = 40;
 
         // ETANT DONNE une machine à café
-        var machine = new SoftwareMachineBuilder().Build();
+        var changeMachine = new ChangeMachineSpy(new ChangeMachineStub());
+        var machine = new SoftwareMachineBuilder().AyantUneChangeMachine(changeMachine).Build();
 
         // QUAND on insère plus que le prix d'un café
         machine.Insérer(prixDuCafé + 1);
@@ -54,6 +60,6 @@ public class SoftwareMachineTest
         Assert.Equal(1, machine.NombreCafésServis);
 
         // ET CollectStoredMoney est appelé une fois sur le hardware
-        Assert.Equal(prixDuCafé + 1, machine.MontantEncaisséEnCentimes);
+        Assert.Equal(1, changeMachine.CollectStoredMoneyInvocations);
     }
 }

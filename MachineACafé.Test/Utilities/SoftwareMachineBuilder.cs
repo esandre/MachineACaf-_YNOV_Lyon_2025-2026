@@ -5,15 +5,22 @@ namespace MachineACafé.Test.Utilities;
 internal class SoftwareMachineBuilder
 {
     private IBrewer _brewer = null;
+    private IChangeMachine _changeMachine = new ChangeMachineStub();
 
     public SoftwareMachine Build()
     {
-        return new SoftwareMachine(_brewer);
+        return new SoftwareMachine(_brewer, _changeMachine);
     }
 
-    public SoftwareMachineBuilder AyantUnBrewerDéfaillant()
+    public SoftwareMachineBuilder AyantUnBrewer(IBrewer brewer)
     {
-        _brewer = new BrewerDéfaillant();
+        _brewer = brewer;
+        return this;
+    }
+
+    public SoftwareMachineBuilder AyantUneChangeMachine(IChangeMachine changeMachine)
+    {
+        _changeMachine = changeMachine;
         return this;
     }
 }

@@ -4,15 +4,15 @@ namespace MachineACafé;
 
 public class SoftwareMachine
 {
-    public SoftwareMachine(IBrewer brewer)
+    public SoftwareMachine(IBrewer brewer, IChangeMachine changeMachine)
     {
+        changeMachine.FlushStoredMoney();
+        changeMachine.CollectStoredMoney();
     }
 
     public void Insérer(ushort montantEnCentimes)
     {
-        MontantEncaisséEnCentimes += montantEnCentimes;
     }
 
     public ushort NombreCafésServis => 1;
-    public ushort MontantEncaisséEnCentimes { get; private set; }
 }
