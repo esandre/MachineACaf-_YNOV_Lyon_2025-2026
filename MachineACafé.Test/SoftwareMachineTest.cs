@@ -1,5 +1,6 @@
 ﻿using Hardware;
 using MachineACafé.Test.Utilities;
+using Moq;
 
 namespace MachineACafé.Test;
 
@@ -11,43 +12,47 @@ public class SoftwareMachineTest
     public void AucuneAction()
     {
         // ETANT DONNE une machine à café
-        var changeMachine = new ChangeMachineSpy();
-        var brewer = new BrewerSpy();
+        var changeMachine = new Mock<IChangeMachine>();
+        var brewer = new Mock<IBrewer>();
 
         _ = new SoftwareMachineBuilder()
-            .AyantUneChangeMachine(changeMachine)
-            .AyantUnBrewer(brewer)
+            .AyantUneChangeMachine(changeMachine.Object)
+            .AyantUnBrewer(brewer.Object)
             .Build();
 
         // ALORS aucune invocation du Brewer ou de la ChangeMachine n'est effectuée
-        Assert.True(changeMachine.Untouched);
-        Assert.True(brewer.Untouched);
+        changeMachine.VerifyNoOtherCalls();
+        brewer.VerifyNoOtherCalls();
     }
 
     [Fact]
     public void CasNominal()
     {
         // ETANT DONNE une machine à café
-        var changeMachine = new ChangeMachineFake();
-        var changeMachineSpy = new ChangeMachineSpy(changeMachine);
+        var changeMachine = new Mock<IChangeMachine>();
+
+        Action<CoinCode>? registeredCallback = null;
+        changeMachine
+            .Setup(m => m.RegisterMoneyInsertedCallback(It.IsAny<Action<CoinCode>>()))
+            .Callback((Action<Action<CoinCode>>) (callback => registeredCallback = callback));
 
         var brewer = new BrewerSpy(new BrewerStub());
         _ = new SoftwareMachineBuilder()
-            .AyantUneChangeMachine(changeMachineSpy)
+            .AyantUneChangeMachine(changeMachine.Object)
             .AyantUnBrewer(brewer)
             .Build();
 
         // QUAND on insère une somme supérieure ou égale au prix d'un café
-        changeMachine.SimulerInsertionPièce(CoinCode.FiftyCents);
+        registeredCallback?.Invoke(CoinCode.FiftyCents);
 
         // ALORS MakeACoffee est appelé une fois sur le hardware
         Assert.Equal(1, brewer.MakeACoffeeInvocations);
 
         // ET CollectStoredMoney est appelé une fois sur le hardware
-        Assert.Equal(1, changeMachineSpy.CollectStoredMoneyInvocations);
+        changeMachine.Verify(m => m.CollectStoredMoney(), Times.Once);
 
         // ET FlushStoredMoney n'est pas appelé
-        Assert.Equal(0, changeMachineSpy.FlushStoredMoneyInvocations);
+        changeMachine.Verify(m => m.FlushStoredMoney(), Times.Never);
     }
 
     [Fact]
