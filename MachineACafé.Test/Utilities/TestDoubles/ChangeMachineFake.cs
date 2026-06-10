@@ -1,6 +1,6 @@
 ﻿using Hardware;
 
-namespace MachineACafé.Test.Utilities;
+namespace MachineACafé.Test.Utilities.TestDoubles;
 
 public class ChangeMachineFake : IChangeMachine
 {
