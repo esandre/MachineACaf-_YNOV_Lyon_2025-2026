@@ -19,6 +19,15 @@ internal class SoftwareMachineBuilder
         return this;
     }
 
+    public SoftwareMachineBuilder EspionnantLeBrewer(out BrewerSpy spy)
+    {
+        var brewerSpy = new BrewerSpy();
+        spy = brewerSpy;
+        _brewer = spy;
+
+        return this;
+    }
+
     public SoftwareMachineBuilder AyantUneChangeMachine(IChangeMachine changeMachine)
     {
         _changeMachine = changeMachine;
