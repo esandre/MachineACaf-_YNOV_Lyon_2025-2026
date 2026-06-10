@@ -1,4 +1,5 @@
 ﻿using Hardware;
+using MachineACafé.Test.Utilities.TestDoubles;
 
 namespace MachineACafé.Test.Utilities;
 

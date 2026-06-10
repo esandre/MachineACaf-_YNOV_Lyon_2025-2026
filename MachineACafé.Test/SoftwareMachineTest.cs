@@ -1,9 +1,8 @@
 ﻿using Hardware;
 using MachineACafé.Test.Utilities;
+using MachineACafé.Test.Utilities.TestDoubles;
 
 namespace MachineACafé.Test;
-
-//TODO : Mocks automatisés.
 
 public class SoftwareMachineTest
 {
@@ -41,13 +40,10 @@ public class SoftwareMachineTest
         changeMachine.SimulerInsertionPièce(CoinCode.FiftyCents);
 
         // ALORS MakeACoffee est appelé une fois sur le hardware
-        Assert.Equal(1, brewer.MakeACoffeeInvocations);
+        Assert.UnCaféServi(brewer);
 
-        // ET CollectStoredMoney est appelé une fois sur le hardware
-        Assert.Equal(1, changeMachineSpy.CollectStoredMoneyInvocations);
-
-        // ET FlushStoredMoney n'est pas appelé
-        Assert.Equal(0, changeMachineSpy.FlushStoredMoneyInvocations);
+        // ET l'argent est encaissé
+        Assert.ArgentEncaissé(changeMachineSpy);
     }
 
     [Fact]
@@ -65,11 +61,8 @@ public class SoftwareMachineTest
         // QUAND on insère une somme supérieure ou égale au prix d'un café
         changeMachine.SimulerInsertionPièce(CoinCode.FiftyCents);
 
-        // ALORS FlushStoredMoney est appelé une fois
-        Assert.Equal(1, changeMachineSpy.FlushStoredMoneyInvocations);
-
-        // ET CollectStoredMoney n'est pas appelé
-        Assert.Equal(0, changeMachineSpy.CollectStoredMoneyInvocations);
+        // ALORS l'argent est restitué
+        Assert.ArgentRestitué(changeMachineSpy);
     }
 
     [Fact]
@@ -89,12 +82,9 @@ public class SoftwareMachineTest
         changeMachine.SimulerInsertionPièce(CoinCode.TwentyCents);
 
         // ALORS MakeACoffee n'est pas appelé
-        Assert.Equal(0, brewer.MakeACoffeeInvocations);
+        Assert.AucunCaféServi(brewer);
 
-        // ET CollectStoredMoney n'est pas appelé
-        Assert.Equal(0, changeMachineSpy.CollectStoredMoneyInvocations);
-
-        // ET FlushStoredMoney est appelé une fois
-        Assert.Equal(1, changeMachineSpy.FlushStoredMoneyInvocations);
+        // ET l'argent est restitué
+        Assert.ArgentRestitué(changeMachineSpy);
     }
 }

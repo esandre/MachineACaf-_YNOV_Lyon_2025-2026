@@ -1,6 +1,6 @@
 ﻿using Hardware;
 
-namespace MachineACafé.Test.Utilities;
+namespace MachineACafé.Test.Utilities.TestDoubles;
 
 internal class BrewerStub : IBrewer
 {
