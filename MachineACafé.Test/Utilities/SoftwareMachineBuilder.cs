@@ -1,27 +1,25 @@
 ﻿using Hardware;
 using MachineACafé.Test.Utilities.TestDoubles;
+using Moq;
 
 namespace MachineACafé.Test.Utilities;
 
 internal class SoftwareMachineBuilder
 {
-    private IBrewer _brewer = new BrewerStub();
-    private IChangeMachine _changeMachine = new ChangeMachineStub();
+    private Mock<IBrewer> _brewer = BrewerTestDoubles.FactoryStub();
+    private readonly Mock<ChangeMachineFake> _changeMachine = new () { CallBase = true };
 
-    public SoftwareMachine Build()
+    public static (SoftwareMachine Instance, IBrewer Brewer, IChangeMachine ChangeMachine) Default 
+        => new SoftwareMachineBuilder().Build();
+
+    public (SoftwareMachine Instance, IBrewer Brewer, IChangeMachine ChangeMachine) Build()
     {
-        return new SoftwareMachine(_brewer, _changeMachine);
+        return (new SoftwareMachine(_brewer.Object, _changeMachine.Object), _brewer.Object, _changeMachine.Object);
     }
 
-    public SoftwareMachineBuilder AyantUnBrewer(IBrewer brewer)
+    public SoftwareMachineBuilder AyantUnBrewerDéfaillant()
     {
-        _brewer = brewer;
-        return this;
-    }
-
-    public SoftwareMachineBuilder AyantUneChangeMachine(IChangeMachine changeMachine)
-    {
-        _changeMachine = changeMachine;
+        _brewer = BrewerTestDoubles.FactoryDummy();
         return this;
     }
 }

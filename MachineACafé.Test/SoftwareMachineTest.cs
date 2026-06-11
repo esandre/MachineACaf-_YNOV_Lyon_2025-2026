@@ -1,6 +1,6 @@
 ﻿using Hardware;
-using MachineACafé.Test.Utilities;
 using MachineACafé.Test.Utilities.TestDoubles;
+using LogicielMachineACafé = MachineACafé.Test.Utilities.SoftwareMachineBuilder;
 
 namespace MachineACafé.Test;
 
@@ -10,31 +10,18 @@ public class SoftwareMachineTest
     public void AucuneAction()
     {
         // ETANT DONNE une machine à café
-        var changeMachine = new ChangeMachineSpy();
-        var brewer = new BrewerSpy();
-
-        _ = new SoftwareMachineBuilder()
-            .AyantUneChangeMachine(changeMachine)
-            .AyantUnBrewer(brewer)
-            .Build();
+        var (_, brewer, changeMachine) = LogicielMachineACafé.Default;
 
         // ALORS aucune invocation du Brewer ou de la ChangeMachine n'est effectuée
-        Assert.True(changeMachine.Untouched);
-        Assert.True(brewer.Untouched);
+        Assert.AucuneAction(changeMachine);
+        Assert.AucunAppel(brewer);
     }
 
     [Fact]
     public void CasNominal()
     {
         // ETANT DONNE une machine à café
-        var changeMachine = new ChangeMachineFake();
-        var changeMachineSpy = new ChangeMachineSpy(changeMachine);
-
-        var brewer = new BrewerSpy(new BrewerStub());
-        _ = new SoftwareMachineBuilder()
-            .AyantUneChangeMachine(changeMachineSpy)
-            .AyantUnBrewer(brewer)
-            .Build();
+        var (_, brewer, changeMachine) = LogicielMachineACafé.Default;
 
         // QUAND on insère une somme supérieure ou égale au prix d'un café
         changeMachine.SimulerInsertionPièce(CoinCode.FiftyCents);
@@ -43,48 +30,37 @@ public class SoftwareMachineTest
         Assert.UnCaféServi(brewer);
 
         // ET l'argent est encaissé
-        Assert.ArgentEncaissé(changeMachineSpy);
+        Assert.ArgentEncaissé(changeMachine);
     }
 
     [Fact]
     public void CasBrewerDéfaillant()
     {
         // ETANT DONNE une machine à café ayant un brewer défaillant
-        var changeMachine = new ChangeMachineFake();
-        var changeMachineSpy = new ChangeMachineSpy(changeMachine);
-
-        _ = new SoftwareMachineBuilder()
-            .AyantUnBrewer(new BrewerDummy())
-            .AyantUneChangeMachine(changeMachineSpy)
+        var (_, _, changeMachine) = new LogicielMachineACafé()
+            .AyantUnBrewerDéfaillant()
             .Build();
 
         // QUAND on insère une somme supérieure ou égale au prix d'un café
         changeMachine.SimulerInsertionPièce(CoinCode.FiftyCents);
 
         // ALORS l'argent est restitué
-        Assert.ArgentRestitué(changeMachineSpy);
+        Assert.ArgentRestitué(changeMachine);
     }
 
     [Fact]
     public void PasAssezArgent()
     {
         // ETANT DONNE une machine à café
-        var changeMachine = new ChangeMachineFake();
-        var changeMachineSpy = new ChangeMachineSpy(changeMachine);
-
-        var brewer = new BrewerSpy();
-        _ = new SoftwareMachineBuilder()
-            .AyantUneChangeMachine(changeMachineSpy)
-            .AyantUnBrewer(brewer)
-            .Build();
+        var (_, brewer, changeMachine) = LogicielMachineACafé.Default;
 
         // QUAND on insère moins que le prix d'un café
         changeMachine.SimulerInsertionPièce(CoinCode.TwentyCents);
 
         // ALORS MakeACoffee n'est pas appelé
-        Assert.UnCaféServi(brewer);
+        Assert.AucunAppel(brewer);
 
         // ET l'argent est restitué
-        Assert.ArgentRestitué(changeMachineSpy);
+        Assert.ArgentRestitué(changeMachine);
     }
 }
