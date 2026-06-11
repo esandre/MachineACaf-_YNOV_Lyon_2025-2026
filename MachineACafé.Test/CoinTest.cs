@@ -4,10 +4,8 @@ namespace MachineACafé.Test;
 
 public class CoinTest
 {
-    private static readonly ushort[] PiècesValides = [1, 2, 5, 10, 20, 50, 100, 200];
-
     public static TheoryData<ushort> CasValidCoinValues() 
-        => new(PiècesValides);
+        => new(Coin.ValidValues);
 
     [Theory]
     [MemberData(nameof(CasValidCoinValues))]
@@ -18,7 +16,7 @@ public class CoinTest
 
     public static TheoryData<ushort> CasInvalidCoinValues()
     {
-        var validValues = new HashSet<ushort>(PiècesValides);
+        var validValues = new HashSet<ushort>(Coin.ValidValues);
 
         var invalidValuesToTest = new HashSet<ushort>();
         invalidValuesToTest.AddRange(validValues.Select(valid => (ushort) (valid + 1)));
