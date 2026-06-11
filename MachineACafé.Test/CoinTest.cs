@@ -1,37 +1,47 @@
-﻿namespace MachineACafé.Test;
+﻿using Xunit.Internal;
+
+namespace MachineACafé.Test;
 
 public class CoinTest
 {
+    private static readonly ushort[] PiècesValides = [1, 2, 5, 10, 20, 50, 100, 200];
+
+    public static TheoryData<ushort> CasValidCoinValues() 
+        => new(PiècesValides);
+
     [Theory]
-    [InlineData(1)]
-    [InlineData(2)]
-    [InlineData(5)]
-    [InlineData(10)]
-    [InlineData(20)]
-    [InlineData(50)]
-    [InlineData(100)]
-    [InlineData(200)]
+    [MemberData(nameof(CasValidCoinValues))]
     public void ValidCoinValues(ushort valueInCents)
     {
         Assert.Equal(valueInCents, new Coin(valueInCents).ValueInCents);
     }
 
+    public static TheoryData<ushort> CasInvalidCoinValues()
+    {
+        var validValues = new HashSet<ushort>(PiècesValides);
+
+        var invalidValuesToTest = new HashSet<ushort>();
+        invalidValuesToTest.AddRange(validValues.Select(valid => (ushort) (valid + 1)));
+        invalidValuesToTest.AddRange(validValues.Select(valid => (ushort) (valid - 1)));
+
+        invalidValuesToTest.Remove(0);
+        invalidValuesToTest.RemoveWhere(validValues.Contains);
+
+        ushort randomValue;
+
+        do
+        {
+            randomValue = (ushort)Random.Shared.Next(0, ushort.MaxValue);
+        } while (validValues.Contains(randomValue) || invalidValuesToTest.Contains(randomValue));
+
+        invalidValuesToTest.Add(randomValue);
+        invalidValuesToTest.Add(ushort.MaxValue);
+
+        return new TheoryData<ushort>(invalidValuesToTest);
+    }
+
     [Theory]
-    [InlineData(0)]
-    [InlineData(3)]
-    [InlineData(4)]
-    [InlineData(6)]
-    [InlineData(9)]
-    [InlineData(11)]
-    [InlineData(19)]
-    [InlineData(21)]
-    [InlineData(49)]
-    [InlineData(51)]
-    [InlineData(99)]
-    [InlineData(101)]
-    [InlineData(199)]
-    [InlineData(201)]
-    [InlineData(ushort.MaxValue)]
+    [MemberData(nameof(CasInvalidCoinValues))]
     public void InvalidCoinValues(ushort valueInCents)
     {
         Assert.Throws<ArgumentOutOfRangeException>(() => new Coin(valueInCents));
