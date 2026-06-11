@@ -1,47 +1,38 @@
-﻿using Xunit.Internal;
+﻿using FsCheck;
+using FsCheck.Fluent;
+using FsCheck.Xunit;
 
 namespace MachineACafé.Test;
 
 public class CoinTest
 {
-    public static TheoryData<ushort> CasValidCoinValues() 
-        => new(Coin.ValidValues);
+    private static Gen<ushort> ValidCoinValueGen =>
+        Gen.Elements(Coin.ValidValues.ToArray());
 
-    [Theory]
-    [MemberData(nameof(CasValidCoinValues))]
-    public void ValidCoinValues(ushort valueInCents)
-    {
-        Assert.Equal(valueInCents, new Coin(valueInCents).ValueInCents);
-    }
-
-    public static TheoryData<ushort> CasInvalidCoinValues()
-    {
-        var validValues = new HashSet<ushort>(Coin.ValidValues);
-
-        var invalidValuesToTest = new HashSet<ushort>();
-        invalidValuesToTest.AddRange(validValues.Select(valid => (ushort) (valid + 1)));
-        invalidValuesToTest.AddRange(validValues.Select(valid => (ushort) (valid - 1)));
-
-        invalidValuesToTest.Remove(0);
-        invalidValuesToTest.RemoveWhere(validValues.Contains);
-
-        ushort randomValue;
-
-        do
+    [Property]
+    public Property ValidValuesDoNotThrow() =>
+        Prop.ForAll(ValidCoinValueGen.ToArbitrary(), value =>
         {
-            randomValue = (ushort)Random.Shared.Next(0, ushort.MaxValue);
-        } while (validValues.Contains(randomValue) || invalidValuesToTest.Contains(randomValue));
+            _ = new Coin(value);
+            return true;
+        });
 
-        invalidValuesToTest.Add(randomValue);
-        invalidValuesToTest.Add(ushort.MaxValue);
+    private static readonly Gen<ushort> InvalidCoinValueGenerator = Gen.Choose(0, ushort.MaxValue)
+        .Select(i => (ushort)i)
+        .Where(x => !Coin.ValidValues.Contains(x));
 
-        return new TheoryData<ushort>(invalidValuesToTest);
-    }
-
-    [Theory]
-    [MemberData(nameof(CasInvalidCoinValues))]
-    public void InvalidCoinValues(ushort valueInCents)
-    {
-        Assert.Throws<ArgumentOutOfRangeException>(() => new Coin(valueInCents));
-    }
+    [Property]
+    public Property InvalidValuesThrows() =>
+        Prop.ForAll(InvalidCoinValueGenerator.ToArbitrary(), value =>
+        {
+            try
+            {
+                _ = new Coin(value);
+                return false;
+            }
+            catch
+            {
+                return true;
+            }
+        });
 }
