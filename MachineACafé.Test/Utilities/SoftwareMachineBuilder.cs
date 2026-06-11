@@ -9,12 +9,15 @@ internal class SoftwareMachineBuilder
     private Mock<IBrewer> _brewer = BrewerTestDoubles.FactoryStub();
     private readonly Mock<ChangeMachineFake> _changeMachine = new () { CallBase = true };
 
-    public static (SoftwareMachine Instance, IBrewer Brewer, IChangeMachine ChangeMachine) Default 
+    public static SoftwareMachineHarness Default 
         => new SoftwareMachineBuilder().Build();
 
-    public (SoftwareMachine Instance, IBrewer Brewer, IChangeMachine ChangeMachine) Build()
+    public SoftwareMachineHarness Build()
     {
-        return (new SoftwareMachine(_brewer.Object, _changeMachine.Object), _brewer.Object, _changeMachine.Object);
+        return new SoftwareMachineHarness(
+            new SoftwareMachine(_brewer.Object, _changeMachine.Object), 
+            _brewer, 
+            _changeMachine);
     }
 
     public SoftwareMachineBuilder AyantUnBrewerDéfaillant()
